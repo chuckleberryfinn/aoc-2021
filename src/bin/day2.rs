@@ -19,24 +19,7 @@ fn get_inputs() -> Vec<(String, usize)> {
 }
 
 
-fn get_result(directions: &Vec<(String, usize)>) -> usize {
-    let mut horizontal = 0;
-    let mut depth = 0;
-
-    for d in directions {
-        match d.0.as_str() {
-            "forward" => horizontal += d.1,
-            "up" => depth -= d.1,
-            "down" => depth += d.1,
-            _ => panic!("Unexpected input")
-        }
-    }
-
-    horizontal * depth
-}
-
-
-fn get_result_2(directions: &Vec<(String, usize)>) -> usize {
+fn get_result(directions: &Vec<(String, usize)>) -> (usize, usize, usize) {
     let mut horizontal = 0;
     let mut depth = 0;
     let mut aim = 0;
@@ -53,13 +36,25 @@ fn get_result_2(directions: &Vec<(String, usize)>) -> usize {
         }
     }
 
-    horizontal * depth
+    (horizontal, depth, aim)
+}
+
+
+fn part_1() -> usize {
+    let result = get_result(&get_inputs());
+    result.0 * result.2
+}
+
+
+fn part_2() -> usize {
+    let result = get_result(&get_inputs());
+    result.0 * result.1
 }
 
 
 fn main() -> Result<()> {
-    println!("Part 1 {}", get_result(&get_inputs()));
-    println!("Part 2 {}", get_result_2(&get_inputs()));
+    println!("Part 1 {}", part_1());
+    println!("Part 2 {}", part_2());
     Ok(())
 }
 
@@ -70,12 +65,12 @@ mod tests {
 
     #[test]
     fn test_part_1() {
-        assert!(get_result(&get_inputs()) == 1_924_923);
+        assert!(part_1() == 1_924_923);
     }
 
     
     #[test]
     fn test_part_2() {
-        assert!(get_result_2(&get_inputs()) == 1_982_495_697);
+        assert!(part_2() == 1_982_495_697);
     }
 }
