@@ -20,23 +20,16 @@ fn get_inputs() -> Vec<(String, usize)> {
 
 
 fn get_result(directions: &Vec<(String, usize)>) -> (usize, usize, usize) {
-    let mut horizontal = 0;
-    let mut depth = 0;
-    let mut aim = 0;
-
-    for d in directions {
-        match d.0.as_str() {
-            "forward" => {
-                horizontal += d.1;
-                depth += aim * d.1;
+    directions
+        .iter()
+        .fold((0, 0, 0), |(horizontal, depth, aim), d|
+            match d.0.as_str() {
+                "forward" => (horizontal + d.1, depth + aim * d.1, aim),
+                "up" => (horizontal, depth, aim - d.1),
+                "down" => (horizontal, depth, aim + d.1),
+                _ => panic!("Unexpected input")
             }
-            "up" => aim -= d.1,
-            "down" => aim += d.1,
-            _ => panic!("Unexpected input")
-        }
-    }
-
-    (horizontal, depth, aim)
+        )
 }
 
 
