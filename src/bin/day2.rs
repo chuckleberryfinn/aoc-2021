@@ -58,8 +58,8 @@ fn get_result_2(directions: &Vec<(String, usize)>) -> usize {
 
 
 fn main() -> Result<()> {
-    println!("Part 1 {:?}", get_result(&get_inputs()));
-    println!("Part 2 {:?}", get_result_2(&get_inputs()));
+    println!("Part 1 {}", get_result(&get_inputs()));
+    println!("Part 2 {}", get_result_2(&get_inputs()));
     Ok(())
 }
 
