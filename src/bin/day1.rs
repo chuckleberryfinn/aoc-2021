@@ -2,8 +2,7 @@ use aoc::*;
 
 
 fn get_inputs() -> Vec<i32> {
-    input("day1.txt")
-        .unwrap()
+    include_str!("../../input/day1.txt")
         .lines()
         .map(|s| s.trim().parse().unwrap())
         .collect::<Vec<i32>>()
@@ -13,7 +12,6 @@ fn get_inputs() -> Vec<i32> {
 fn get_sums(input: &[i32]) -> Vec<i32> {
     input
         .windows(3)
-        .into_iter()
         .map(|x| x.iter().sum())
         .collect::<Vec<i32>>()
 }
