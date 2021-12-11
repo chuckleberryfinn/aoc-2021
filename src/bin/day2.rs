@@ -1,33 +1,23 @@
 use aoc::*;
 
 
-fn parse_line(p: &str) -> (String, usize) {
-    let x: Vec<&str> = p.split(' ').collect();
-    (
-        x[0].to_string(),
-        x[1].parse::<usize>().unwrap()
-    )
-}
-
-
-fn get_inputs() -> Vec<(String, usize)> {
-    input("day2.txt")
-        .unwrap()
+fn get_inputs() -> Vec<(&'static str, usize)> {
+    include_str!("../../input/day2.txt")
         .lines()
-        .map(|s| parse_line(s))
-        .collect::<Vec<(String, usize)>>()
+        .map(|s| s.splitn(2, ' ').collect::<Vec<&str>>())
+        .map(|s| (s[0], s[1].parse().unwrap()))
+        .collect()
 }
 
 
-fn get_result(directions: &Vec<(String, usize)>) -> (usize, usize, usize) {
+fn get_result(directions: &Vec<(&'static str, usize)>) -> (usize, usize, usize) {
     directions
         .iter()
         .fold((0, 0, 0), |(horizontal, depth, aim), d|
-            match d.0.as_str() {
+            match d.0 {
                 "forward" => (horizontal + d.1, depth + aim * d.1, aim),
                 "up" => (horizontal, depth, aim - d.1),
-                "down" => (horizontal, depth, aim + d.1),
-                _ => panic!("Unexpected input")
+                _ => (horizontal, depth, aim + d.1)
             }
         )
 }
