@@ -10,7 +10,7 @@ fn get_inputs() -> Vec<(&'static str, usize)> {
 }
 
 
-fn get_result(directions: &Vec<(&'static str, usize)>) -> (usize, usize, usize) {
+fn get_result(directions: &[(&'static str, usize)]) -> (usize, usize, usize) {
     directions
         .iter()
         .fold((0, 0, 0), |(horizontal, depth, aim), d|
