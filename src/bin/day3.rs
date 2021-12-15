@@ -8,11 +8,6 @@ fn main() -> Result<()> {
 }
 
 
-fn part_1() -> usize {
-    get_result(&get_inputs())
-}
-
-
 fn get_inputs() -> Vec<i32> {
     include_str!("../../input/day3.txt")
         .lines()
@@ -21,9 +16,10 @@ fn get_inputs() -> Vec<i32> {
 }
 
 
-fn get_result(inputs: &[i32]) -> usize {
+fn part_1() -> usize {
+    let inputs = get_inputs();
     let g = (0..12)
-        .map(|i| most_common(inputs, i))
+        .map(|i| most_common(&inputs, i))
         .fold(0, |x, c|
             match c {
                 1 => (x << 1) + 1,
@@ -49,12 +45,8 @@ fn most_common(inputs: &[i32], position: i32) -> i32 {
 
 
 fn part_2() -> i32 {
-    get_result_2(&get_inputs())
-}
-
-
-fn get_result_2(inputs: &[i32]) -> i32 {
-    get_life_support_value(inputs, false) * get_life_support_value(inputs, true)
+    let inputs = get_inputs();
+    get_life_support_value(&inputs, false) * get_life_support_value(&inputs, true)
 }
 
 
