@@ -60,6 +60,7 @@ fn get_life_support_value(inputs: &[i32], invert: bool) -> i32 {
                 .collect::<Vec<i32>>();
 
             match filtered.len() {
+                0 => panic!("Unexpected state"),
                 1 => filtered[0] >> (12 - (i + 1)),
                 _ => {
                     if invert {
