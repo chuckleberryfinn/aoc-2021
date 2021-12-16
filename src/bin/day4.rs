@@ -2,61 +2,50 @@ use aoc::*;
 
 
 struct Board {
-    positions: [[usize; 5]; 5],
-    marked: [[bool; 5]; 5],
-    won: bool
+    positions: [[(usize, bool); 5]; 10]
 }
 
 
 impl Board {
-    fn fill(&mut self, numbers: Vec<Vec<usize>>) {
-        for (x, row) in numbers.iter().enumerate() {
-            for (y, column) in row.iter().enumerate() {
-                self.positions[x][y] = *column;
+    fn new(numbers: &[Vec<usize>]) -> Self {
+        let mut board = Board{positions: [[(0, false); 5]; 10]};
+        for (r, row) in numbers.iter().enumerate() {
+            for (c, column) in row.iter().enumerate() {
+                board.positions[r][c].0 = *column;
+                board.positions[c + 5][r].0 = *column;
+            }
+        }
+        board
+    }
+
+    fn is_winner(&self) -> bool {
+        self.positions
+            .iter()
+            .any(|&row|
+                row
+                    .iter()
+                    .all(|&c| c.1 == true)
+            )
+    }
+
+    fn mark_called(&mut self, number: usize) {
+        for r in 0..10 {
+            match self.positions[r].iter().position(|&x| x.0 == number) {
+                Some(i) => self.positions[r][i].1 = true,
+                None => ()
             }
         }
     }
 
-    fn check_called(&mut self, number: usize) -> bool {
-        for x in 0..5 {
-            for y in 0..5 {
-                if self.positions[x][y] == number {
-                    self.marked[x][y] = true;
-                    break;
-                }
-            }
-        }
-        for x in 0..5 {
-            let mut found = true;
-            for y in 0..5 {
-                found &= self.marked[x][y];
-                if !found {
-                    break;
-                }
-            }
-
-            if found {
-                self.won = true;
-                return true;
-            }
-        }
-
-        for x in 0..5 {
-            let mut found = true;
-            for y in 0..5 {
-                found &= self.marked[y][x];
-                if !found {
-                    break;
-                }
-            }
-
-            if found {
-                self.won = true;
-                return true;
-            }
-        }
-
-        false
+    fn sum_non_marked(&self) -> usize {
+        self.positions[0..5]
+            .iter()
+            .map(|r| r
+                .iter()
+                .filter(|c| !c.1)
+                .map(|c| c.0)
+                .sum::<usize>()
+            ).sum()
     }
 }
 
@@ -75,19 +64,16 @@ fn make_boards(inputs: Vec<&'static str>) -> (Vec<usize>, Vec<Board>) {
                     .map(|s| s.trim().parse().unwrap())
                     .collect::<Vec<usize>>();
 
-    let boards = inputs[1..]
-                    .iter()
-                    .map(|l| l.split_whitespace()
-                        .map(|number| number.parse().unwrap())
-                        .collect::<Vec<usize>>())
-                    .collect::<Vec<Vec<usize>>>();
+    let all_boards: Vec<Board> = inputs[1..]
+        .iter()
+        .map(|l| l.split_whitespace()
+            .map(|number| number.parse().unwrap())
+            .collect())
+        .collect::<Vec<Vec<usize>>>()
+        .chunks(5)
+        .map(|b| Board::new(&b.to_vec()))
+        .collect();
 
-    let mut all_boards: Vec<Board> = Vec::new();
-    for b in boards.chunks(5) {
-        let mut board = Board{positions: [[0; 5]; 5], marked: [[false; 5]; 5], won: false};
-        board.fill(b.to_vec());
-        all_boards.push(board);
-    }
     (numbers, all_boards)
 }
 
@@ -96,20 +82,11 @@ fn check_boards(numbers: Vec<usize>, mut all_boards: Vec<Board>) -> Vec<usize> {
     let mut winners: Vec<usize> = Vec::new();
 
     for n in numbers {
+        all_boards.retain(|b| !b.is_winner());
         for b in &mut all_boards {
-            if b.won {
-                continue;
-            }
-            if b.check_called(n) {
-                let mut sum = 0;
-                for x in 0..5 {
-                    for y in 0..5 {
-                        if !b.marked[x][y] {
-                            sum += b.positions[x][y];
-                        }
-                    }
-                }
-                winners.push(n * sum);
+            b.mark_called(n);
+            if b.is_winner() {
+                winners.push(n * b.sum_non_marked());
             }
         }
     }
@@ -119,7 +96,7 @@ fn check_boards(numbers: Vec<usize>, mut all_boards: Vec<Board>) -> Vec<usize> {
 
 fn part_1() -> usize {
     let all_boards = make_boards(get_inputs());
-    check_boards(all_boards.0, all_boards.1)[0]
+    *check_boards(all_boards.0, all_boards.1).first().unwrap()
 }
 
 
