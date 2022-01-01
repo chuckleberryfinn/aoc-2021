@@ -1,7 +1,7 @@
 use aoc::*;
 
 
-fn get_inputs() -> Vec<i32>{
+fn get_inputs() -> Vec<i32> {
     include_str!("../../input/day7.txt")
         .lines()
         .map(|s| s.split(',').collect::<Vec<&str>>())
@@ -13,13 +13,13 @@ fn get_inputs() -> Vec<i32>{
 
 fn part_1() -> i32 {
     let inputs = get_inputs();
+    let maximum = inputs.iter().max().unwrap();
 
-    inputs
-        .iter()
-        .map(|input|
+    (0..*maximum)
+        .map(|i|
             inputs
                 .iter()
-                .map(|i| (input - i).abs())
+                .map(|input| (i - input).abs())
                 .sum::<i32>()
         )
         .min()
@@ -32,14 +32,14 @@ fn part_2() -> i32 {
     let maximum = inputs.iter().max().unwrap();
 
     (0..*maximum)
-        .map(|input|
+        .map(|i|
             inputs
                 .iter()
-                .map(|i|
-                    (0..=((input - i).abs())).sum::<i32>()
+                .map(|input|
+                    (0..=((i - input).abs())).sum::<i32>()
                 )
                 .sum::<i32>()
-            )
+        )
         .min()
         .unwrap()
 }
