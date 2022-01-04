@@ -10,7 +10,7 @@ fn get_inputs() -> Vec<Vec<u32>> {
 }
 
 
-fn all_lows(inputs: &[Vec<u32>]) -> Vec<(usize, usize)> {
+fn all_lows(inputs: &[Vec<u32>]) -> Vec<(i32, i32)> {
     inputs
         .iter()
         .enumerate()
@@ -18,14 +18,14 @@ fn all_lows(inputs: &[Vec<u32>]) -> Vec<(usize, usize)> {
             row
                 .iter()
                 .enumerate()
-                .filter(|(j, column)| !((i > 0 && **column >= inputs[i-1][*j])
-                                        || (*j > 0 && **column >= inputs[i][j-1])
-                                        || (i + 1 < inputs.len() && **column >= inputs[i+1][*j])
-                                        || (j + 1 < inputs[0].len() && **column >= inputs[i][j+1]))
+                .filter(|(j, &column)| !((i > 0 && column >= inputs[i-1][*j])
+                                        || (*j > 0 && column >= inputs[i][j-1])
+                                        || (i + 1 < inputs.len() && column >= inputs[i+1][*j])
+                                        || (j + 1 < inputs[0].len() && column >= inputs[i][j+1]))
                 )
                 .into_iter()
-                .map(|(j, _)| (i, j))
-                .collect::<Vec<(usize, usize)>>()
+                .map(|(j, _)| (i as i32, j as i32))
+                .collect::<Vec<(i32, i32)>>()
         )
         .flatten()
         .collect()
@@ -37,34 +37,26 @@ fn part_1() -> u32 {
 
     all_lows(&inputs)
         .iter()
-        .map(|(x, y)| inputs[*x][*y] + 1)
+        .map(|(x, y)| inputs[*x as usize][*y as usize] + 1)
         .collect::<Vec<u32>>()
         .iter()
         .sum()
 }
 
 
-fn basin(inputs: &[Vec<u32>], start: (usize, usize), seen: &mut HashSet<(usize, usize)>) -> usize {
-    if start.0 >= inputs.len() || start.1 >= inputs[0].len() || seen.contains(&(start.0, start.1)) {
+fn basin(inputs: &[Vec<u32>], start: (i32, i32), seen: &mut HashSet<(i32, i32)>) -> usize {
+    if start.0 < 0 || start.1 < 0 || (start.0 as usize) >= inputs.len() || (start.1 as usize) >= inputs[0].len() || seen.contains(&start) {
         return 0;
     }
 
-    seen.insert((start.0, start.1));
+    seen.insert(start);
 
-    if inputs[start.0][start.1] == 9 {
+    if inputs[start.0 as usize][start.1 as usize] == 9 {
         return 0;
     }
 
-    let mut x = 1 + basin(inputs, (start.0 + 1, start.1), seen) + basin(inputs, (start.0, start.1 + 1), seen);
-    if start.0 > 0 {
-        x += basin(inputs, (start.0 - 1, start.1), seen);
-    }
-
-    if start.1 > 0 {
-        x += basin(inputs, (start.0, start.1 - 1), seen);
-    }
-
-    x
+    basin(inputs, (start.0 + 1, start.1), seen) + basin(inputs, (start.0, start.1 + 1), seen) +
+    basin(inputs, (start.0 - 1, start.1), seen) + basin(inputs, (start.0, start.1 - 1), seen) + 1
 }
 
 
@@ -72,13 +64,13 @@ fn part_2() -> usize {
     let inputs = get_inputs();
     let mut seen = HashSet::new();
 
-    let all_basins =
-        all_lows(&inputs)
-            .iter()
-            .map(|l| basin(&inputs, *l, &mut seen))
-            .collect::<BinaryHeap<usize>>();
-
-    all_basins.iter().take(3).product::<usize>()
+    all_lows(&inputs)
+        .iter()
+        .map(|&l| basin(&inputs, l, &mut seen))
+        .collect::<BinaryHeap<usize>>()
+        .iter()
+        .take(3)
+        .product::<usize>()
 }
 
 
