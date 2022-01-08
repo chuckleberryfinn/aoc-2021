@@ -52,6 +52,7 @@ fn part_2() -> usize {
         scores.push(
             stack
                 .iter()
+                .rev()
                 .fold(0, |total, v| (total * 5) + symbols.get(v).unwrap())
         );
     }
