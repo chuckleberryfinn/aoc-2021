@@ -34,7 +34,7 @@ fn find_paths(start: &str, graph: &HashMap<&str, Vec<&str>>, mut seen: HashMap<S
         return 1;
     }
 
-    if (seen.values().any(|&v| v >= limit) && seen.contains_key(&s)) || !graph.contains_key(&start) {
+    if seen.values().any(|&v| v >= limit) && seen.contains_key(&s) {
         return 0;
     }
 
